@@ -1,2 +1,2 @@
-- [User Story](https://github.com/sureshmelvinsigera/user-stories/blob/main/user-story.md)
+- [Writing User Story](https://github.com/sureshmelvinsigera/user-stories/blob/main/user-story.md)
 - [Writing Acceptance Criteria](https://github.com/sureshmelvinsigera/user-stories/blob/main/acceptance-criteria.md)
