@@ -1,4 +1,4 @@
-# Pedestrian Crossing the Street — A User Stories Workshop
+# Pedestrian Crossing the Street — How to create a good user stories
 
 #### Learning Objectives
 
