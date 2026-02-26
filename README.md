@@ -17,15 +17,31 @@ That tension is exactly why this exercise works. If you can identify every rule,
 
 Three concepts sit at the heart of this exercise, and they nest inside each other like layers.
 
-A Feature is the highest level. It names an area of behaviour. Think of it as the chapter title — broad enough to contain several related stories, narrow enough that someone reading it knows exactly what part of the world you are describing. A good Feature for this workshop might be: "Pedestrian crosses a two-way street at a signalised intersection."
+| Concept | What It Does | Analogy |
+|---|---|---|
+| Feature | Names the area of behaviour being described | The chapter title |
+| User Story | Captures who wants what and why | A single scene within that chapter |
+| Given-When-Then | Validates the story with testable scenarios | The proof that the scene plays out correctly |
+
+A Feature is the highest level. Think of it as broad enough to contain several related stories, but narrow enough that someone reading it knows exactly what part of the world you are describing. A good Feature for this workshop might be: "Pedestrian crosses a two-way street at a signalised intersection."
 
 A User Story sits one level below the Feature. It captures who wants something, what they want, and why it matters to them. The format is deliberate:
 
-As a (persona), I want to (action), so that (outcome).
+- As a (persona) — tells you whose perspective you are writing from.
+- I want to (action) — tells you what behaviour to design for.
+- So that (outcome) — tells you why it matters.
 
-Every word earns its place. The persona tells you whose perspective you are writing from. The action tells you what behaviour to design for. The outcome tells you why it matters — and if you cannot articulate the "so that," you probably do not understand the requirement well enough yet.
+If you cannot articulate the "so that," you probably do not understand the requirement well enough yet.
 
-Given-When-Then is how you validate each story. Given describes the world before anything happens — the preconditions. When describes the trigger — the action the persona takes. Then describes what should be true afterward. Two additional keywords round out the syntax: And continues any clause with more conditions, and But adds a negative qualifier.
+Given-When-Then is how you validate each story. The keywords each serve a distinct purpose:
+
+| Keyword | Purpose |
+|---|---|
+| Given | The preconditions — what is true before the action happens |
+| When | The trigger — the action the persona takes |
+| Then | The expected outcome — what should be true after |
+| And | Continues any of the above with additional conditions |
+| But | Adds a negative qualifier to Given, When, or Then |
 
 These three layers — Feature, User Story, Given-When-Then — give you a shared language that business stakeholders, developers, and testers can all read without translation.
 
@@ -33,13 +49,28 @@ These three layers — Feature, User Story, Given-When-Then — give you a share
 
 A base case is the scenario where everything works exactly as designed. No surprises, no failures, no unusual conditions. It is the first thing you write because it establishes what "normal" looks like, and every corner case you write later is a deviation from it.
 
-For a two-way street with traffic signals, the base case for a pedestrian is straightforward. The pedestrian stands at the kerb. Traffic lights are red in both directions. The walk signal shows "Walk." The pedestrian steps onto the crosswalk, walks to the other side, and arrives safely. Traffic remains stopped until the signal changes.
+For a two-way street with traffic signals, the base case has two sides:
 
-There is a second base case worth writing separately: the pedestrian arrives at the kerb and the signal shows "Don't Walk." The expected behaviour is that the pedestrian remains on the kerb and waits. It sounds obvious, but writing it down matters. You are defining the boundary between "system working correctly" and "pedestrian ignoring the system," and those two things have very different implications.
+| Scenario | Signal State | Pedestrian Behaviour | Expected Outcome |
+|---|---|---|---|
+| Crossing permitted | Walk signal shows "Walk," traffic lights red in both directions | Pedestrian steps onto crosswalk and walks across | Pedestrian arrives safely on opposite kerb |
+| Crossing not permitted | Signal shows "Don't Walk" | Pedestrian observes the signal | Pedestrian remains on kerb and waits |
 
-Now consider the same crossing on a one-way street. The preconditions shift. Traffic flows in a single direction. The vehicle signal for that direction is red. The walk signal shows "Walk." The pedestrian steps onto the crosswalk and only needs to account for traffic from one direction.
+The second scenario sounds obvious, but writing it down matters. You are defining the boundary between "system working correctly" and "pedestrian ignoring the system," and those two things have very different implications.
 
-That last detail — "only needs to check one direction" — is worth pausing on. It is an assumption, and assumptions are where corner cases hide. What about a cyclist riding against traffic? An emergency vehicle approaching from the opposite direction? A delivery truck reversing out of a side alley? The one-way street feels simpler, but the simplicity is conditional.
+Now consider the same crossing on a one-way street. The preconditions shift:
+
+- Traffic flows in a single direction only.
+- The vehicle signal for that direction is red.
+- The walk signal shows "Walk."
+- The pedestrian only needs to account for traffic from one direction.
+
+That last point — "only needs to check one direction" — is worth pausing on. It is an assumption, and assumptions are where corner cases hide. What about a cyclist riding against traffic? An emergency vehicle approaching from the opposite direction? A delivery truck reversing out of a side alley? The one-way street feels simpler, but the simplicity is conditional.
+
+| Street Type | Directions to Check | Feels Simpler? | Hidden Risks |
+|---|---|---|---|
+| Two-way | Both directions | No | Standard — traffic from left and right |
+| One-way | One direction | Yes | Cyclists against flow, emergency vehicles, reversing vehicles |
 
 A good discussion question for your group: what exactly makes the one-way street simpler, and what are you assuming when you say that?
 
@@ -49,37 +80,71 @@ Corner cases are the unusual, rare, or boundary conditions that the base case do
 
 The most natural corner cases for a crossing fall into four categories.
 
-Timing and signal failures come first. A pedestrian enters the crosswalk on a valid "Walk" signal and is halfway across a two-way street when the signal changes to flashing "Don't Walk." What should happen? The pedestrian should continue forward to the opposite kerb. Vehicles should remain stopped until the crosswalk is clear. The pedestrian should not reverse direction — turning around mid-crossing introduces more risk, not less.
+##### Timing and Signal Failures
+
+A pedestrian enters the crosswalk on a valid "Walk" signal and is halfway across a two-way street when the signal changes to flashing "Don't Walk." What should happen?
+
+- The pedestrian should continue forward to the opposite kerb.
+- Vehicles should remain stopped until the crosswalk is clear.
+- The pedestrian should not reverse direction — turning around mid-crossing introduces more risk, not less.
 
 A related scenario: the pedestrian presses the crossing button, but the signal never changes. After a reasonable wait — say 120 seconds — the system should be considered malfunctioning. The pedestrian now has no guidance and must rely on their own judgement. This matters because your acceptance criteria just shifted from describing normal behaviour to describing a failure mode, and failure modes need their own stories.
 
-Accessibility surfaces an entirely different set of corner cases. A visually impaired pedestrian cannot rely on the visual walk signal at all. If the crossing is equipped with an audible indicator, that pedestrian begins crossing when the sound activates and follows tactile paving to the opposite kerb. But what if the audible indicator is broken? What if the tactile paving is damaged or missing? Each of those is a separate scenario.
+##### Accessibility
+
+A visually impaired pedestrian cannot rely on the visual walk signal at all. If the crossing is equipped with an audible indicator, that pedestrian begins crossing when the sound activates and follows tactile paving to the opposite kerb. But what if the audible indicator is broken? What if the tactile paving is damaged or missing? Each of those is a separate scenario.
 
 A wheelchair user encounters a different problem. Both kerb ramps must exist. If the ramp on the departure side exists but the arrival side has no ramp, the pedestrian crosses successfully and then finds themselves stranded in the roadway, unable to mount the kerb. The walk signal did its job, the traffic stopped, and the pedestrian is still stuck. That is a corner case that only becomes visible when you change the persona.
 
-Environmental conditions create their own category. Heavy rain reduces visibility for drivers. Faded crosswalk markings leave an unfamiliar pedestrian unsure of where to cross. Ice on the road surface extends crossing time beyond what the signal duration allows. None of these change the signal logic, but all of them change the outcome.
+##### Environmental Conditions
 
-Behavioural corner cases round out the picture. A pedestrian jaywalks on a one-way street because the nearest signalised crossing is too far away. A large group enters the crosswalk simultaneously, and the slower members are still crossing when the signal changes. In the group scenario, vehicles must continue to wait — but the signal was never calibrated for group crossings in the first place.
+None of these change the signal logic, but all of them change the outcome:
+
+| Condition | Impact on Crossing |
+|---|---|
+| Heavy rain | Reduced driver visibility — turning vehicles may not see the pedestrian |
+| Faded crosswalk markings | Unfamiliar pedestrian unsure of where to cross, may walk outside the intended zone |
+| Ice or snow on road surface | Crossing time extends beyond what the signal duration allows |
+| Night with poor street lighting | Pedestrian and crosswalk both less visible to drivers |
+
+##### Behavioural
+
+- A pedestrian jaywalks on a one-way street because the nearest signalised crossing is too far away. The risk is lower than jaywalking on a two-way street, but hazards remain — emergency vehicles, speeding, obstructed sightlines.
+- A large group enters the crosswalk simultaneously, and the slower members are still crossing when the signal changes. Vehicles must continue to wait, but the signal was never calibrated for group crossings in the first place.
 
 Notice what happened across these four categories. You started with a simple crosswalk and ended up writing about infrastructure failures, accessibility gaps, weather, and human behaviour. That is not scope creep. That is thorough analysis.
+
+| Category | What Breaks | Example |
+|---|---|---|
+| Timing / Signal | Signal behaviour or timing does not match reality | Signal changes mid-crossing, button never triggers |
+| Accessibility | Infrastructure excludes a persona | No kerb ramp, no audible signal, damaged tactile paving |
+| Environmental | External conditions degrade the crossing | Rain, ice, darkness, faded markings |
+| Behavioural | Human behaviour deviates from design assumptions | Jaywalking, group crossing, distracted pedestrian |
 
 #### Dependencies — What Must Be True
 
 A dependency is something that must exist or be operational for a scenario to be valid. If you remove it, the scenario breaks — or worse, it produces a dangerous outcome that nobody planned for.
 
-The traffic signal itself is a dependency for every signalised crossing scenario. If it is out of service, none of your base cases apply. Crosswalk markings are a dependency for the pedestrian's ability to identify the safe crossing zone. Kerb ramps are a dependency for wheelchair and mobility-impaired users. The audible walk indicator is a dependency for visually impaired pedestrians. The crossing button is a dependency for any scenario involving a pedestrian-initiated signal request.
+| Dependency | What It Affects |
+|---|---|
+| Traffic signal is operational | All signalised crossing scenarios — if it is out, no base case applies |
+| Crosswalk markings are visible | Pedestrian's ability to identify the safe crossing zone |
+| Kerb ramps exist on both sides | Wheelchair and mobility-impaired scenarios |
+| Audible walk indicator is installed | Visually impaired pedestrian scenarios |
+| Crossing button functions correctly | Pedestrian-initiated signal request scenarios |
+| Drivers obey traffic signals | Every scenario — pedestrian safety depends on driver compliance |
+| Street direction is signed or marked | One-way scenarios — pedestrian must know which direction to check |
+| Countdown timer is visible | Pedestrian's decision to start crossing or wait for the next cycle |
+| Street lighting is operational | All after-dark crossing scenarios |
 
-Some dependencies are less obvious. Driver compliance is one — every scenario assumes that vehicles actually stop when the signal is red. Street direction signage is another — on a one-way street, the pedestrian must know which direction to check, and that knowledge depends on visible markings or signs. A countdown timer, if present, is a dependency for the pedestrian's decision about whether to start crossing or wait for the next cycle. Time of day and street lighting affect visibility at night, making lighting infrastructure a dependency for after-dark scenarios.
+Some of these are obvious — of course the traffic signal must work. Others are less so. Driver compliance is one that every scenario quietly assumes but rarely calls out. Street direction signage is another — on a one-way street, the pedestrian must know which direction to check, and that knowledge depends on visible markings or signs.
 
-When writing scenarios, four questions will surface most of your dependencies.
+When writing scenarios, four questions will surface most of your dependencies:
 
-What infrastructure must exist? Signals, ramps, markings, buttons, tactile paving, lighting.
-
-What systems must be operational? Signal timing, audible indicators, countdown timers, the crossing button mechanism.
-
-What behaviours from other people are assumed? Drivers stopping on red. Other pedestrians moving at a reasonable pace. Emergency vehicles using sirens.
-
-What environmental conditions are assumed? Daylight. Dry roads. Clear visibility. Temperatures above freezing.
+- What infrastructure must exist? Signals, ramps, markings, buttons, tactile paving, lighting.
+- What systems must be operational? Signal timing, audible indicators, countdown timers, the crossing button mechanism.
+- What behaviours from other people are assumed? Drivers stopping on red, other pedestrians moving at a reasonable pace, emergency vehicles using sirens.
+- What environmental conditions are assumed? Daylight, dry roads, clear visibility, temperatures above freezing.
 
 Here is a useful test: take any dependency from your list and imagine it is missing. If at least one of your scenarios produces a different outcome, it is a true dependency and it belongs in your documentation. If removing it changes nothing, it was not really a dependency — it was just context.
 
@@ -87,31 +152,52 @@ Here is a useful test: take any dependency from your list and imagine it is miss
 
 Everything up to this point — the framework, the base cases, the corner cases, the dependencies — was preparation. This is where it lands. A well-written user story is not just the "As a / I want / So that" statement. It is that statement combined with scenarios that cover the happy path, the edge conditions, and the assumptions holding everything together.
 
-Here is what a complete user story looks like for a pedestrian crossing a two-way street.
+##### User Story 1 — Pedestrian Crossing a Two-Way Street
 
 Feature: Pedestrian crosses a two-way street at a signalised intersection.
 
 User Story: As a pedestrian, I want to cross the street safely when the walk signal is active, so that I reach the other side without being struck by traffic.
 
-Scenario — base case, successful crossing on walk signal: Given the pedestrian is standing at the kerb, and the traffic light for vehicles is red in both directions, and the pedestrian walk signal shows "Walk." When the pedestrian steps onto the crosswalk and walks to the other side. Then the pedestrian arrives safely on the opposite kerb, and traffic remains stopped until the signal changes.
+| Scenario Type | Scenario Name | Given | When | Then |
+|---|---|---|---|---|
+| Base case | Successful crossing on walk signal | The pedestrian is standing at the kerb, and the traffic light for vehicles is red in both directions, and the walk signal shows "Walk" | The pedestrian steps onto the crosswalk and walks to the other side | The pedestrian arrives safely on the opposite kerb, and traffic remains stopped until the signal changes |
+| Corner case | Signal changes mid-crossing | The pedestrian has entered the crosswalk on a valid "Walk" signal, and is halfway across the street | The signal changes to flashing "Don't Walk" | The pedestrian continues to the opposite kerb, vehicles remain stopped until the pedestrian clears the crosswalk, but the pedestrian does not reverse direction |
+| Dependency exposed | Crossing button malfunction | The pedestrian is at a button-activated crossing, and has pressed the crossing button | 120 seconds elapse without a signal change | The system is considered malfunctioning, and the pedestrian must use their own judgement to cross or find an alternative route |
 
-Scenario — corner case, signal changes mid-crossing: Given the pedestrian has already entered the crosswalk on a valid "Walk" signal, and the pedestrian is halfway across the street. When the signal changes to flashing "Don't Walk." Then the pedestrian should continue walking to the opposite kerb, and vehicles should remain stopped until the pedestrian clears the crosswalk, but the pedestrian should not reverse direction back to the original kerb.
+Dependencies for the malfunction scenario:
 
-Scenario — dependency exposed, crossing button malfunction: Given the pedestrian is at a button-activated crossing, and the pedestrian has pressed the crossing button. When 120 seconds have elapsed without a signal change. Then the system should be considered malfunctioning, and the pedestrian must use their own judgement to cross or find an alternative route. Dependencies: the button mechanism must be operational, and the signal system must be configured to respond to button input within a defined time window.
+- The button mechanism must be operational.
+- The signal system must be configured to respond to button input within a defined time window.
 
-Now the same Feature, but with a different persona.
+##### User Story 2 — Wheelchair User Crossing a Two-Way Street
+
+Same Feature: Pedestrian crosses a two-way street at a signalised intersection.
 
 User Story: As a pedestrian who uses a wheelchair, I want both sides of the crossing to have kerb ramps, so that I can safely enter and exit the roadway.
 
-Scenario — base case, both ramps present: Given the pedestrian uses a wheelchair, and kerb ramps exist on both sides of the crossing, and the walk signal shows "Walk." When the pedestrian crosses the street. Then the pedestrian exits the roadway via the opposite ramp without obstruction.
+| Scenario Type | Scenario Name | Given | When | Then |
+|---|---|---|---|---|
+| Base case | Both ramps present | The pedestrian uses a wheelchair, and kerb ramps exist on both sides of the crossing, and the walk signal shows "Walk" | The pedestrian crosses the street | The pedestrian exits the roadway via the opposite ramp without obstruction |
+| Corner case | Opposite ramp missing | The pedestrian uses a wheelchair, and the walk signal shows "Walk," but the opposite kerb does not have a ramp | The pedestrian reaches the other side | The pedestrian is unable to mount the kerb, and is stranded in the roadway |
+| Corner case | Ramp obstructed | The pedestrian uses a wheelchair, and a kerb ramp exists on the opposite side, but the ramp is blocked by a parked vehicle or debris | The pedestrian reaches the other side | The pedestrian cannot use the ramp, and must find an alternative exit from the roadway |
 
-Scenario — corner case, opposite ramp missing: Given the pedestrian uses a wheelchair, and the walk signal shows "Walk," but the opposite kerb does not have a ramp. When the pedestrian reaches the other side. Then the pedestrian is unable to mount the kerb, and the pedestrian is stranded in the roadway. Dependencies: kerb ramp infrastructure must be present on both sides, and a recent accessibility audit must have confirmed ramp availability.
+Dependencies for the missing ramp scenario:
 
-Scenario — corner case, ramp obstructed: Given the pedestrian uses a wheelchair, and a kerb ramp exists on the opposite side, but the ramp is blocked by a parked vehicle or debris. When the pedestrian reaches the other side. Then the pedestrian cannot use the ramp, and must find an alternative exit from the roadway. Dependencies: ramp clearance must be maintained, and enforcement or signage must prevent vehicles from blocking ramp access.
+- Kerb ramp infrastructure must be present on both sides.
+- A recent accessibility audit must have confirmed ramp availability.
 
-Notice the structure. Each user story has a clear persona and a clear reason. Each scenario follows Given-When-Then precisely. The base case establishes the happy path. The corner cases break something — a missing ramp, a blocked ramp, a malfunctioning button — and the expected outcome changes accordingly. The dependencies are called out explicitly so that no one has to guess what assumptions are baked in.
+Dependencies for the obstructed ramp scenario:
 
-One more detail worth observing: the two user stories sit under the same Feature, but they describe completely different experiences of the same crosswalk. The able-bodied pedestrian and the wheelchair user walk the same path and encounter different realities. That is what changing the persona does. It does not add complexity for the sake of it — it reveals complexity that was always there.
+- Ramp clearance must be maintained.
+- Enforcement or signage must prevent vehicles from blocking ramp access.
+
+##### What to Notice
+
+Two things are worth observing about these stories.
+
+First, the structure is consistent. Every story has a clear persona and a clear reason. Every scenario follows Given-When-Then precisely. The base case establishes the happy path. The corner cases break something — a missing ramp, a blocked ramp, a malfunctioning button — and the expected outcome changes accordingly. The dependencies are called out explicitly so that no one has to guess what assumptions are baked in.
+
+Second, the two user stories sit under the same Feature, but they describe completely different experiences of the same crosswalk. The able-bodied pedestrian and the wheelchair user walk the same path and encounter different realities. That is what changing the persona does — it does not add complexity for the sake of it. It reveals complexity that was always there.
 
 #### Summary
 
