@@ -1,7 +1,5 @@
 # Pedestrian Crossing the Street — User Stories Workshop
 
----
-
 ## Introduction
 
 As Business Analysts, one of the most important skills you will develop is the ability to **decompose real-world behaviour into clear, testable requirements**. This exercise uses something deceptively simple — a pedestrian crossing the street — to practice writing **Features**, **User Stories**, and **Given-When-Then (GWT) scenarios** in Gherkin syntax.
